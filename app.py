@@ -1,50 +1,46 @@
-from flask import Flask, render_template, request, jsonify
+# app.py
+from flask import Flask, jsonify, request, send_from_directory
+from flask_cors import CORS
 import openai
-from dotenv import load_dotenv
 import os
 
-load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+app = Flask(__name__, static_folder='static', static_url_path='')
+CORS(app)
 
-app = Flask(__name__)
+# Initialize OpenAI API
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 fields = [
-    "Engineering",
-    "Medicine",
-    "Computer Science",
-    "Business",
-    "Arts",
-    "Law",
-    "Mathematics",
-    "Physics",
-    "Chemistry",
-    "Biology"
+    'Chemical Engineering',
+    'Artificial Intelligence',
+    'Data Science',
+    # Add more fields as needed
 ]
 
-@app.route('/')
-def index():
-    return render_template('index.html', fields=fields)
+@app.route('/fields', methods=['GET'])
+def get_fields():
+    return jsonify({'fields': fields})
 
-@app.route('/get_info', methods=['POST'])
-def get_info():
-    data = request.json
-    field = data['field']
-    parameter = data['parameter']
-    
-    prompt = f"Provide information about {parameter} for {field}."
-    
+def generate_content(field, parameter):
+    prompt = f"Provide detailed information about {parameter.replace('_', ' ')} for the field of {field}."
     response = openai.Completion.create(
-        engine="text-davinci-003",
+        engine='text-davinci-003',
         prompt=prompt,
-        max_tokens=200
+        max_tokens=150
     )
-    
-    content = response.choices[0].text.strip()
-    
-    return jsonify({
-        "heading": f"{parameter.capitalize()} of {field}",
-        "content": content
-    })
+    return response.choices[0].text.strip()
+
+@app.route('/<field>/<parameter>', methods=['GET'])
+def get_field_details(field, parameter):
+    try:
+        content = generate_content(field, parameter)
+        return jsonify({'heading': f'{parameter.replace("_", " ").capitalize()} for {field}', 'content': content})
+    except Exception as e:
+        return jsonify({'heading': 'Error', 'content': str(e)}), 500
+
+@app.route('/')
+def serve_index():
+    return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
