@@ -3,51 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Field Information</title>
+    <title>Career Fields Information</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { color: #333; }
-        .field-info { margin-top: 20px; }
-        .field-info h2 { color: #555; }
+        /* Your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .autocomplete-suggestions {
+            border: 1px solid #ccc;
+            border-top: none;
+            max-height: 150px;
+            overflow-y: auto;
+            background: white;
+        }
+        .autocomplete-suggestion {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .autocomplete-suggestion:hover {
+            background: #ddd;
+        }
+        .tabs {
+            display: none;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px;
+            cursor: pointer;
+            background: #ddd;
+            border-radius: 5px;
+        }
+        .tab.active {
+            background: #bbb;
+        }
+        .content {
+            padding: 20px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .button-container {
+            display: none;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .show-buttons {
+            display: flex;
+        }
+        .button {
+            padding: 10px;
+            cursor: pointer;
+            background: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background: #4cae4c;
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid #3498db;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <h1>Field Information</h1>
-    <form id="field-form">
-        <label for="field">Field:</label>
-        <select id="field" name="field">
-            {% for field in fields %}
-                <option value="{{ field }}">{{ field }}</option>
-            {% endfor %}
-        </select>
-        <label for="parameter">Parameter:</label>
-        <select id="parameter" name="parameter">
-            <option value="scope">Scope</option>
-            <option value="career">Career</option>
-            <option value="skills">Skills</option>
-        </select>
-        <button type="submit">Get Info</button>
-    </form>
-    <div class="field-info">
-        <h2 id="info-heading"></h2>
-        <p id="info-content"></p>
+    <div class="container">
+        <h1>Explore Career Fields</h1>
+        <input type="text" id="searchField" placeholder="Enter career field..." />
+        <div id="autocompleteList" class="autocomplete-suggestions"></div>
+        <div id="tabs" class="tabs">
+            <div class="tab" onclick="selectParameter(0)">What is?</div>
+            <div class="tab" onclick="selectParameter(1)">Personality</div>
+            <div class="tab" onclick="selectParameter(2)">Scope</div>
+            <div class="tab" onclick="selectParameter(3)">Related Careers</div>
+        </div>
+        <div id="content" class="content">
+            <p>Enter a career field to get started.</p>
+        </div>
+        <div id="buttonContainer" class="button-container">
+            <button class="button" onclick="loadPrevious()">Previous</button>
+            <button class="button" onclick="loadNext()">Next</button>
+        </div>
     </div>
+
     <script>
-        document.getElementById('field-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const field = document.getElementById('field').value;
-            const parameter = document.getElementById('parameter').value;
-            fetch('/get_info', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ field: field, parameter: parameter })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('info-heading').textContent = data.heading;
-                document.getElementById('info-content').textContent = data.content;
+        let fields = [];
+        let currentField = '';
+        let parameters = ['what_is', 'personality', 'scope', 'related_careers'];
+        let currentParameterIndex = 0;
+
+        document.getElementById('searchField').addEventListener('input', function() {
+            const input = this.value.toLowerCase();
+            const autocompleteList = document.getElementById('autocompleteList');
+            autocompleteList.innerHTML = '';
+            if (input.length === 0) return;
+
+            fields.forEach(field => {
+                if (field.toLowerCase().includes(input)) {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-suggestion';
+                    div.innerHTML = field;
+                    div.onclick = () => {
+                        currentField = field;
+                        document.getElementById('searchField').value = field;
+                        autocompleteList.innerHTML = '';
+                        loadContent();
+                    };
+                    autocompleteList.appendChild(div);
+                }
             });
         });
+
+        function selectParameter(index) {
+            currentParameterIndex = index;
+            loadContent();
+        }
+
+        function loadContent() {
+            const contentDiv = document.getElementById('content');
+            const tabs = document.getElementById('tabs');
+            const buttonContainer = document.getElementById('buttonContainer');
+
+            contentDiv.innerHTML = '<div class="loader"></div>';
+            tabs.style.display = 'flex';
+            buttonContainer.classList.add('show-buttons');
+
+            fetch(`/${currentField}/${parameters[currentParameterIndex]}`)
+                .then(response => response.json())
+                .then(data => {
+                    contentDiv.innerHTML = `<h2 class="heading">${data.heading}</h2><div id="tabContent">${data.content}</div>`;
+                })
+                .catch(error => {
+                    contentDiv.innerHTML = `<p>Error loading content: ${error}</p>`;
+                });
+
+            document.querySelectorAll('.tab').forEach((tab, idx) => {
+                if (idx === currentParameterIndex) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+        }
+
+        function loadPrevious() {
+            if (currentParameterIndex > 0) {
+                currentParameterIndex--;
+                loadContent();
+            }
+        }
+
+        function loadNext() {
+            if (currentParameterIndex < parameters.length - 1) {
+                currentParameterIndex++;
+                loadContent();
+            }
+        }
+
+        // Load initial fields from the server
+        fetch('/fields')
+            .then(response => response.json())
+            .then(data => {
+                fields = data.fields;
+            })
+            .catch(error => console.error('Error loading fields:', error));
     </script>
 </body>
 </html>
