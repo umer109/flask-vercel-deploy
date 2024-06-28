@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field Info</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .field-info { margin-top: 20px; }
+        .field-info h2 { color: #555; }
+    </style>
+</head>
+<body>
+    <h1>Field Information</h1>
+    <form id="field-form">
+        <label for="field">Field:</label>
+        <select id="field" name="field">
+            <option value="Engineering">Engineering</option>
+            <option value="Medicine">Medicine</option>
+            <option value="Computer Science">Computer Science</option>
+        </select>
+        <label for="parameter">Parameter:</label>
+        <select id="parameter" name="parameter">
+            <option value="scope">Scope</option>
+            <option value="career">Career</option>
+            <option value="skills">Skills</option>
+        </select>
+        <button type="submit">Get Info</button>
+    </form>
+    <div class="field-info">
+        <h2 id="info-heading"></h2>
+        <p id="info-content"></p>
+    </div>
+    <script>
+        document.getElementById('field-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const field = document.getElementById('field').value;
+            const parameter = document.getElementById('parameter').value;
+            fetch('/get_info', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ field: field, parameter: parameter })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('info-heading').textContent = data.heading;
+                document.getElementById('info-content').textContent = data.content;
+            });
+        });
+    </script>
+</body>
+</html>
