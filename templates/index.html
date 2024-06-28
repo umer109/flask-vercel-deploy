@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Field Info</title>
+    <title>Field Information</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         h1 { color: #333; }
@@ -16,9 +16,9 @@
     <form id="field-form">
         <label for="field">Field:</label>
         <select id="field" name="field">
-            <option value="Engineering">Engineering</option>
-            <option value="Medicine">Medicine</option>
-            <option value="Computer Science">Computer Science</option>
+            {% for field in fields %}
+                <option value="{{ field }}">{{ field }}</option>
+            {% endfor %}
         </select>
         <label for="parameter">Parameter:</label>
         <select id="parameter" name="parameter">
