@@ -3,184 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Career Fields Information</title>
+    <title>AI Education Tool</title>
     <style>
-        /* Your CSS styles here */
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;700&display=swap');
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Nunito', sans-serif;
+            background-color: #f4f4f9;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f9;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
+
         h1 {
             text-align: center;
             color: #333;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
             margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
         }
-        .autocomplete-suggestions {
-            border: 1px solid #ccc;
-            border-top: none;
-            max-height: 150px;
-            overflow-y: auto;
-            background: white;
+
+        h5 {
+            text-align: center;
+            color: #333;
+            font-size: 14px;
+            margin-top: 10px;
         }
-        .autocomplete-suggestion {
-            padding: 10px;
-            cursor: pointer;
-        }
-        .autocomplete-suggestion:hover {
-            background: #ddd;
-        }
-        .tabs {
-            display: none;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-        .tab {
-            padding: 10px;
-            cursor: pointer;
-            background: #ddd;
-            border-radius: 5px;
-        }
-        .tab.active {
-            background: #bbb;
-        }
-        .content {
+        
+        #selectField {
+    text-align: center;
+    color: #555;
+    font-size: 18px;
+    margin-top: 20px;
+    position: relative;
+}
+
+        #selectField::before {
+            content: "\1F50D"; /* Unicode for magnifying glass icon */
+            font-size: 24px;
+            margin-right: 10px;
+}
+
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
             padding: 20px;
-            background: white;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
+
+
+
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .tab {
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .tab.active {
+            background-color: #555;
+        }
+
+        .tab:not(.active):hover {
+            background-color: #444;
+        }
+
+        .heading {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            max-height: calc(100% - 180px); /* Adjusted for button container and headings */
+            overflow-y: auto; /* Added for scrollable content */
+        }
+
+        .content p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .content ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
         .button-container {
             display: none;
             justify-content: space-between;
-            margin-top: 10px;
+            margin-top: 20px;
         }
-        .show-buttons {
+
+        .button-container.show-buttons {
             display: flex;
         }
-        .button {
-            padding: 10px;
-            cursor: pointer;
-            background: #5cb85c;
+
+        .btn {
+            background-color: #333;
             color: white;
+            padding: 8px 16px;
             border: none;
+            cursor: pointer;
             border-radius: 5px;
         }
-        .button:hover {
-            background: #4cae4c;
+
+        .btn:hover {
+            background-color: #555;
         }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            width: calc(100% - 20px);
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: block;
+            margin: 10px auto; /* Center align and adjust spacing */
+        }
+
+        .autocomplete-suggestions {
+            border: 1px solid #ddd;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: #fff;
+            border-radius: 5px;
+            position: absolute;
+            width: calc(100% - 20px);
+            z-index: 10;
+        }
+
+        .autocomplete-suggestion {
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .autocomplete-suggestion:hover {
+            background-color: #eee;
+        }
+
+        .arrow {
+            font-size: 0.8em;
+            color: #333;
+            margin-left: 10px;
+        }
+
         .loader {
-            border: 5px solid #f3f3f3;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #333;
             border-radius: 50%;
-            border-top: 5px solid #3498db;
             width: 30px;
             height: 30px;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin: 10px auto;
         }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        /* Additional Styles for Tab Content */
+        #tabContent {
+            padding: 10px;
+        }
+
+        #tabContent p {
+            margin-bottom: 10px;
+        }
+
+        #tabContent ul {
+            margin-bottom: 10px;
+            padding-left: 20px;
+        }
+
+        #tabContent li {
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Explore Career Fields</h1>
-        <input type="text" id="searchField" placeholder="Enter career field..." />
-        <div id="autocompleteList" class="autocomplete-suggestions"></div>
-        <div id="tabs" class="tabs">
-            <div class="tab" onclick="selectParameter(0)">What is?</div>
+        <h1><b> Anna </b> AI-Powerd Career Path-Finder 👇</h1>
+        <h5>Search a job title or career name in the search box below</h5>
+        <div style="position: relative;">
+            <input type="text" id="searchField" placeholder="Search for a field..." autocomplete="off">
+            <div id="autocompleteList" class="autocomplete-suggestions"></div>
+        </div>
+        <div id="tabs" class="tabs" style="display: none;">
+            <div class="tab active" onclick="selectParameter(0)">What is</div>
             <div class="tab" onclick="selectParameter(1)">Personality</div>
             <div class="tab" onclick="selectParameter(2)">Scope</div>
             <div class="tab" onclick="selectParameter(3)">Related Careers</div>
         </div>
-        <div id="content" class="content">
-            <p>Enter a career field to get started.</p>
+        <div class="content" id="content">
+            <h5 id="selectField">Select a field to learn more</h5>
+
         </div>
-        <div id="buttonContainer" class="button-container">
-            <button class="button" onclick="loadPrevious()">Previous</button>
-            <button class="button" onclick="loadNext()">Next</button>
+        <div class="button-container" id="buttonContainer">
+            <button class="btn" id="backBtn" onclick="loadPrevious()">Previous</button>
+            <button class="btn" id="nextBtn" onclick="loadNext()">Next</button>
         </div>
     </div>
 
     <script>
-        let fields = [];
+        const fields = {
+            'chemical_engineering': 'Chemical Engineering',
+            'artificial_intelligence': 'Artificial Intelligence'
+        };
+        const parameters = ['what_is', 'personality', 'scope', 'related_careers'];
         let currentField = '';
-        let parameters = ['what_is', 'personality', 'scope', 'related_careers'];
         let currentParameterIndex = 0;
 
         document.getElementById('searchField').addEventListener('input', function() {
-            const input = this.value.toLowerCase();
+            const query = this.value.toLowerCase().replace(/\s+/g, '');
             const autocompleteList = document.getElementById('autocompleteList');
             autocompleteList.innerHTML = '';
-            if (input.length === 0) return;
-
-            fields.forEach(field => {
-                if (field.toLowerCase().includes(input)) {
-                    const div = document.createElement('div');
-                    div.className = 'autocomplete-suggestion';
-                    div.innerHTML = field;
-                    div.onclick = () => {
-                        currentField = field;
-                        document.getElementById('searchField').value = field;
-                        autocompleteList.innerHTML = '';
-                        loadContent();
-                    };
-                    autocompleteList.appendChild(div);
-                }
+            Object.keys(fields).filter(field => fields[field].toLowerCase().replace(/\s+/g, '').includes(query)).forEach(field => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-suggestion';
+                div.textContent = fields[field];
+                div.innerHTML += '<span class="arrow">&#9654;</span>';  // Right arrow
+                div.onclick = function() {
+                    currentField = field;
+                    currentParameterIndex = 0;
+                    loadContent();
+                    autocompleteList.innerHTML = '';
+                    document.getElementById('searchField').value = fields[field];
+                    document.getElementById('tabs').style.display = 'flex';
+                    document.getElementById('buttonContainer').classList.remove('show-buttons');
+                };
+                autocompleteList.appendChild(div);
             });
         });
 
-        function selectParameter(index) {
-            currentParameterIndex = index;
-            loadContent();
-        }
-
         function loadContent() {
-            const contentDiv = document.getElementById('content');
-            const tabs = document.getElementById('tabs');
-            const buttonContainer = document.getElementById('buttonContainer');
+            if (currentField) {
+                // Display loading state
+                document.getElementById('content').innerHTML = `
+                    <div style="text-align: center; padding-top: 50px;">
+                        <p><strong> Anna will write here</strong></p>
+                        <div class="loader"></div>
+                    </div>
+                `;
 
-            contentDiv.innerHTML = '<div class="loader"></div>';
-            tabs.style.display = 'flex';
-            buttonContainer.classList.add('show-buttons');
-
-            fetch(`/${currentField}/${parameters[currentParameterIndex]}`)
-                .then(response => response.json())
-                .then(data => {
-                    contentDiv.innerHTML = `<h2 class="heading">${data.heading}</h2><div id="tabContent">${data.content}</div>`;
-                })
-                .catch(error => {
-                    contentDiv.innerHTML = `<p>Error loading content: ${error}</p>`;
-                });
-
-            document.querySelectorAll('.tab').forEach((tab, idx) => {
-                if (idx === currentParameterIndex) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
+                setTimeout(() => {
+                    // Simulate loading completion after 1 second (adjust timing as necessary)
+                    fetch('/get_info', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ field: currentField, parameter: parameters[currentParameterIndex] })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('content').innerHTML = `
+                            <div class="heading">${data.heading}</div>
+                            <div id="tabContent">${formatContent(data.content)}</div>
+                        `;
+                        updateTabs();
+                        document.getElementById('backBtn').style.display = currentParameterIndex > 0 ? 'block' : 'none';
+                        document.getElementById('nextBtn').style.display = currentParameterIndex < parameters.length - 1 ? 'block' : 'none';
+                        document.getElementById('buttonContainer').classList.add('show-buttons');
+                        typeContent();
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                        document.getElementById('content').innerHTML = `
+                            <div class="heading">Error</div>
+                            <p>Failed to fetch data. Please try again later.</p>
+                        `;
+                        document.getElementById('buttonContainer').classList.remove('show-buttons');
+                    });
+                }, 1000); // Simulated loading time (adjust as necessary)
+            }
         }
 
-        function loadPrevious() {
-            if (currentParameterIndex > 0) {
-                currentParameterIndex--;
-                loadContent();
-            }
+        function formatContent(content) {
+            return content.split('\n').map(line => {
+                if (line.startsWith('- ')) {
+                    return <li>${line.substring(2)}</li>;
+                } else if (line.startsWith('1. ') || line.startsWith('2. ') || line.startsWith('3. ') || line.startsWith('4. ') || line.startsWith('5. ')) {
+                    return <p><strong>${line.substring(0, 3)}</strong>${line.substring(3)}</p>;
+                } else if (line.startsWith('')) {
+                    const parts = line.split('');
+                    return <p><strong>${parts[1]}</strong>${parts[2]}</p>;
+                } else {
+                    return <p>${line}</p>;
+                }
+            }).join('');
+        }
+
+        function typeContent() {
+            const contentElement = document.getElementById('tabContent');
+            const paragraphs = contentElement.querySelectorAll('p');
+            paragraphs.forEach((paragraph, index) => {
+                paragraph.style.opacity = '0';
+                setTimeout(() => {
+                    paragraph.style.opacity = '1';
+                }, (index + 1) * 200); // Adjust timing as needed for typing effect
+            });
         }
 
         function loadNext() {
@@ -190,13 +337,28 @@
             }
         }
 
-        // Load initial fields from the server
-        fetch('/fields')
-            .then(response => response.json())
-            .then(data => {
-                fields = data.fields;
-            })
-            .catch(error => console.error('Error loading fields:', error));
+        function loadPrevious() {
+            if (currentParameterIndex > 0) {
+                currentParameterIndex--;
+                loadContent();
+            }
+        }
+
+        function selectParameter(index) {
+            currentParameterIndex = index;
+            loadContent();
+        }
+
+        function updateTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach((tab, index) => {
+                if (index === currentParameterIndex) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+        }
     </script>
 </body>
 </html>
